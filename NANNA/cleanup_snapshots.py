@@ -5,8 +5,24 @@ from operator import itemgetter
 #get region and snapshots
 ec2_client = boto3.client('ec2', region_name = "eu-west-3")
 
-snapshots =  ec2_client.describe_snapshots(
-    OwnerIds =['self']
+volumes =  ec2_client.describe_volumes(
+        Filters= [
+            {
+            'Name':'tag:Name',
+            'Values': ['prod']
+            }
+        ]
+    )
+
+for volume in volumes['Volumes']:
+    snapshots =  ec2_client.describe_snapshots(
+    OwnerIds =['self'],
+    Filters= [
+            {
+            'Name':'volume-id',
+            'Values': [volume['VolumeId']]
+            }
+        ]
 )
 
 # sort snapshots in descending order
